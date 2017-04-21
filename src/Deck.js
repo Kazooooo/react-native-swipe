@@ -31,7 +31,7 @@ class Deck extends Component {
       },
     });
 
-    this.state = { panResponder, position };
+    this.state = { panResponder, position, index: 0 };
   }
 
   getCardStyle() {
@@ -52,7 +52,7 @@ class Deck extends Component {
     Animated.timing(this.state.position, {
       toValue: { x, y: 0 },
       duration: SWIPE_OUT_DURATION,
-    }).start();
+    }).start(() => this.onSwipeComplete(direction));
   }
 
   resetPosition() {
@@ -61,9 +61,25 @@ class Deck extends Component {
     }).start();
   }
 
+  onSwipeComplete(direction) {
+    const { onSwipeLeft, onSwipeRight, data } = this.props;
+    const item = data[this.state.index];
+    switch (direction) {
+      case 'right':
+        onSwipeRight(item);
+        break;
+      default:
+        onSwipeLeft(item);
+    }
+    this.state.position.setValue({ x: 0, y: 0 });
+    this.setState({ index: this.state.index + 1 });
+  }
+
   renderCard() {
     return this.props.data.map((item, index) => {
-      if (index === 0) {
+      if (index < this.state.index) return null;
+
+      if (index === this.state.index) {
         return (
           <Animated.View
             key={item.id}
@@ -87,5 +103,10 @@ class Deck extends Component {
     );
   }
 }
+
+Deck.defaultProps = {
+  onSwipeRight: () => {},
+  onSwipeLeft: () => {},
+};
 
 export default Deck;
