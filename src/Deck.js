@@ -18,7 +18,9 @@ class Deck extends Component {
       onPanResponderMove: (event, gesture) => {
         position.setValue({ x: gesture.dx, y: gesture.dy });
       },
-      onPanResponderRelease: () => {},
+      onPanResponderRelease: () => {
+        this.resetPosition();
+      },
     });
 
     this.state = { panResponder, position };
@@ -35,6 +37,12 @@ class Deck extends Component {
       ...position.getLayout(),
       transform: [{ rotate }],
     };
+  }
+
+  resetPosition() {
+    Animated.spring(this.state.position, {
+      toValue: { x: 0, y: 0 },
+    }).start();
   }
 
   renderCard() {
