@@ -56,6 +56,20 @@ class Deck extends Component {
     LayoutAnimation.spring();
   }
 
+  onSwipeComplete(direction) {
+    const { onSwipeLeft, onSwipeRight, data } = this.props;
+    const item = data[this.state.index];
+    switch (direction) {
+      case 'right':
+        onSwipeRight(item);
+        break;
+      default:
+        onSwipeLeft(item);
+    }
+    this.state.position.setValue({ x: 0, y: 0 });
+    this.setState({ index: this.state.index + 1 });
+  }
+
   getCardStyle() {
     const { position } = this.state;
     const rotate = position.x.interpolate({
@@ -81,20 +95,6 @@ class Deck extends Component {
     Animated.spring(this.state.position, {
       toValue: { x: 0, y: 0 },
     }).start();
-  }
-
-  onSwipeComplete(direction) {
-    const { onSwipeLeft, onSwipeRight, data } = this.props;
-    const item = data[this.state.index];
-    switch (direction) {
-      case 'right':
-        onSwipeRight(item);
-        break;
-      default:
-        onSwipeLeft(item);
-    }
-    this.state.position.setValue({ x: 0, y: 0 });
-    this.setState({ index: this.state.index + 1 });
   }
 
   renderCard() {
